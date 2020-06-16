@@ -1,0 +1,80 @@
+# 服务器端口号
+server:
+  port: 8706
+  servlet:
+    # 配置项目名称（默认为 /），如果配置了项目名称，那么在访问路径中要加上配置的路径
+    context-path: /
+    session:
+      # 服务器session最大超时时间(分钟)
+      timeout: 30m    encoding:      charset: UTF-8
+  # tomcat配置
+  tomcat:
+    # tomcat字符集
+    uri-encoding: UTF-8
+    # tomcat最大连接数
+    max-connections: 2000
+    # accept队列长度
+    accept-count: 5000
+    # 最大连接超时时间
+    connection-timeout: 100
+    accesslog:
+      # 启用访问日志
+      enabled: true
+      # 访问日志的格式模式
+      pattern: common
+      # 是否缓冲输出，使其仅定期刷新
+      buffered: true
+      # 创建日志文件的目录。可以绝对或相对于Tomcat基础目录（整体一定是绝对路径，windows要加盘符）
+      directory: /Users/allen/Develop/logs/${spring.application.name}
+      # directory: /Users/allen/Develop/logs/${spring.application.name}
+       # 日志文件名前缀
+      prefix: ${spring.application.name}-access-
+      # 要放在日志文件名中的日期格式
+      file-date-format: yyyy-MM-dd
+       # 日志文件名后缀
+      suffix: .log
+      # 是否延迟在文件名中包含日期戳，直到旋转时间
+      rename-on-rotate: false
+      # 设置请求的IP地址，主机名，协议和端口的请求属性
+      request-attributes-enabled: false
+      # 是否启用访问日志轮换
+      rotate: true    threads:
+      # tomcat最大线程数      max: 1000
+spring:
+  application:
+    name: allen-config-server
+  main:
+    banner-mode: "off"
+  cloud:
+    config:      server:        git:          uri: https://github.com/Allen0806/allen-config
+          username: 
+          password: 
+          default-label: master
+          search-paths:
+          - allen-message-sending
+  profiles:    active: dev
+    
+eureka:
+  instance:
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+    hostname: ${spring.cloud.client.ip-address}
+    # true：实例以 IP 的形式注册；false：实例以机器 HOSTNAME 形式注册
+    prefer-ip-address: true
+    # 表示 Eureka Server 在接收到上一个心跳之后等待下一个心跳的秒数（默认 90 秒），
+    # 若不能在指定时间内收到心跳，则移除此实例，并禁止此实例的流量。
+    # 需要设置为至少高于 lease-renewal-interval-in-seconds 的值，不然会被误移除了。
+    lease-expiration-duration-in-seconds: 30
+    # 表示 Eureka Client 向 Eureka Server 发送心跳的频率（默认 30 秒），
+    # 如果在 lease-expiration-duration-in-seconds 指定的时间内未收到心跳，则移除该实例。
+    lease-renewal-interval-in-seconds: 10
+  client:
+    # Eureka Client 刷新本地缓存时间，默认30秒
+    registry-fetch-interval-seconds: 5
+    # 表示是否将自己注册到Eureka Server，默认为true。
+    register-with-eureka: true 
+    # 表示是否从Eureka Server获取注册信息，默认为true。
+    fetch-registry: true
+    # 表示客户端需要注册的 Eureka Server 的地址。
+    service-url:
+      defaultZone: http://allen:allen1234@${spring.cloud.client.ip-address}:8701/eureka/
+      
